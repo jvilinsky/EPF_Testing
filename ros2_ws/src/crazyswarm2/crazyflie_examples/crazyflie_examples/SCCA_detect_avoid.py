@@ -100,9 +100,17 @@ class DetectAndAvoid(Node):
                                f" with ca_th1 = {self.ca_threshold1} m, ca_th2 = {self.ca_threshold2} m")
         
         # Initialize Crazyflie logging
-        self.poses = {variable: None for variable in self.uris} #initialize dict of uris with None value
-
-                
+        self.poses_dict = {}
+        poses_dict_structure = { #create dictionary structure
+            "x": float,
+            "y": float,
+            "z": float,
+            "pitch": float,
+            "yaw": float,
+            "roll": float
+        }
+        for key in self.uris: #create dictionary entry for each crazyflie using the structure created
+            self.poses_dict[key] = poses_dict_structure
 
     def pose_callback(self, msg:PoseStamped):
         self.msg_pose = msg
@@ -113,7 +121,7 @@ class DetectAndAvoid(Node):
         self.poses[uri] = position
 
     def all_poses_callback(self, msg:NamedPoseArray):
-        self.get_logger().info('msg %s' % (msg))
+        #self.get_logger().info('msg %s' % (msg))
 
         poses = msg.poses
         for pose in poses:
@@ -123,8 +131,14 @@ class DetectAndAvoid(Node):
             z = pose.pose.position.z
             quat = pose.pose.orientation
             pitch,yaw,roll=self.quaternion_to_euler(quat.x,quat.y,quat.z,quat.w)
-            new_pose = list(x,y,z,pitch,yaw,roll) 
-            
+            self.poses_dict[name]["x"] = x
+            self.poses_dict[name]["y"] = y
+            self.poses_dict[name]["z"] = z
+            self.poses_dict[name]["pitch"] = pitch
+            self.poses_dict[name]["yaw"] = yaw
+            self.poses_dict[name]["roll"] = roll
+        
+        #self.get_logger().info('poses = %s' % (self.poses_dict))
 
 
     def waypoint_callback(self, msg:WayPoint):
@@ -386,7 +400,7 @@ class DetectAndAvoid(Node):
 
         return list(pos_inertial_array)
     
-    def quaternion_to_euler(x, y, z, w):
+    def quaternion_to_euler(self,x, y, z, w):
 
         # Roll (x-axis rotation)
         sinr_cosp = 2 * (w * x + y * z)
