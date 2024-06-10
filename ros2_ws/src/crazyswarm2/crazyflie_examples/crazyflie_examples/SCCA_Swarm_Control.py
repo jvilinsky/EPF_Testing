@@ -97,9 +97,71 @@ class SwarmControl(Node):
     def shape_selector_callback(self,request,response):
         self.shape = request.shape
         robot_prefix = self._ros_parameters["robot_prefix"]
-        if self.shape == "circle":
+        if self.shape == "Takeoff":
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0; self.y_pos = -0.5; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = -0.5; self.y_pos = 0; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf7':
+                self.x_pos = 0; self.y_pos = 0; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = 0.5; self.y_pos = 0; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf9':
+                self.x_pos = 0.5; self.y_pos = 0; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "U": 
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf7':
+                self.x_pos = 0; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = 0.4572; self.y_pos = 0.4; self.z_pos = 0; self.yaw = 0.6604; self.abs_rel = 0
+            elif robot_prefix == 'cf9':
+                self.x_pos = 0.4572; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "Transition": 
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0.4572; self.y_pos = 1.0; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = 0; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf7':
+                self.x_pos = -0.4572; self.y_pos = 1.0; self.z_pos = 0.9906; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = -0.4572; self.y_pos = -0.2; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf9':
+                self.x_pos = 0.4572; self.y_pos = -0.2; self.z_pos = 0.9906; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "C": 
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0; self.yaw = 1.3208; self.abs_rel = 0
+            elif robot_prefix == 'cf7':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.9906; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf9':
+                self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "C(Alternative)": 
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf7':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.9906; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf9':
+                self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
         elif self.shape == 'line':
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
@@ -107,12 +169,19 @@ class SwarmControl(Node):
                 self.x_pos = 0; self.y_pos = 1.5; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf9':
                 self.x_pos = 0; self.y_pos = -0.5; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
-        elif self.shape == 'house':
+        elif self.shape == "Template (Dont Use)": 
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
-        elif self.shape == 'concave_pentagon':
-            self.get_logger().info(f"Requesting shape {self.shape}...")
-            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0; self.y_pos = 0; self.z_pos = 0; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = 0; self.y_pos = 0; self.z_pos = 0; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf7':
+                self.x_pos = 0; self.y_pos = 0; self.z_pos = 0; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = 0; self.y_pos = 0; self.z_pos = 0; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf9':
+                self.x_pos = 0; self.y_pos = 0; self.z_pos = 0; self.yaw = 0; self.abs_rel = 0
         else:
             self.get_logger().info("======>Requested shape does not exist please select valid shape<======")
 

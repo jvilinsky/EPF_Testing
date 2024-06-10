@@ -51,16 +51,16 @@ class DetectAndAvoid(Node):
             robot_prefix + '/pose',
             self.pose_callback,
             10)
-        qos_profile = QoSProfile(reliability =QoSReliabilityPolicy.BEST_EFFORT,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-                deadline = Duration(seconds=0, nanoseconds=1e9/100.0))
-        self.all_poses_sub = self.create_subscription(
-            NamedPoseArray,
-            '/poses',
-            self.all_poses_callback,
-            qos_profile
-        )
+        # qos_profile = QoSProfile(reliability =QoSReliabilityPolicy.BEST_EFFORT,
+        #         history=QoSHistoryPolicy.KEEP_LAST,
+        #         depth=1,
+        #         deadline = Duration(seconds=0, nanoseconds=1e9/100.0))
+        # self.all_poses_sub = self.create_subscription(
+        #     NamedPoseArray,
+        #     '/poses',
+        #     self.all_poses_callback,
+        #     qos_profile
+        # )
         self.scan_sub = self.create_subscription(
             LaserScan,
             robot_prefix + '/scan',
