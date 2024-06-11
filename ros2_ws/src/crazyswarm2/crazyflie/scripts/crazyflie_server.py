@@ -196,16 +196,21 @@ class CrazyflieServer(Node):
                     self.swarm._cfs[link_uri].logging["custom_log_groups"][log_group_name][
                         "frequency"] = custom_log_topics[log_group_name]["frequency"]
 
+        #self.get_logger().info(f"swarm = {self.swarm}")
+
+
         # Now all crazyflies are initialized, open links!
         try:
+            #self.get_logger().info(f"Crazyflie_Server_check1")
             self.swarm.open_links()
+            #self.get_logger().info(f"Crazyflie_Server_check2")
         except Exception as e:
             # Close node if one of the Crazyflies can not be found
             self.get_logger().info("Error!: One or more Crazyflies can not be found. ")
             self.get_logger().info("Check if you got the right URIs, if they are turned on" +
                                    " or if your script have proper access to a Crazyradio PA")
             exit()
-        
+                
         # Create services for the entire swarm and each individual crazyflie
         self.create_service(Empty, "all/emergency", self._emergency_callback)
         self.create_service(Takeoff, "all/takeoff", self._takeoff_callback)
@@ -246,13 +251,17 @@ class CrazyflieServer(Node):
                 Hover, name +
                 "/cmd_hover", partial(self._cmd_hover_changed, uri=uri), 10
             )
-            qos_profile = QoSProfile(reliability =QoSReliabilityPolicy.BEST_EFFORT,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                depth=1,
-                deadline = Duration(seconds=0, nanoseconds=1e9/100.0))
+            # qos_profile = QoSProfile(reliability =QoSReliabilityPolicy.BEST_EFFORT,
+            #     history=QoSHistoryPolicy.KEEP_LAST,
+            #     depth=1,
+            #     deadline = Duration(seconds=0, nanoseconds=1e9/100.0))
+            # self.create_subscription(
+            #     NamedPoseArray, "/poses", 
+            #     self._poses_changed, qos_profile
+            # )
             self.create_subscription(
                 NamedPoseArray, "/poses", 
-                self._poses_changed, qos_profile
+                self._poses_changed, 10
             )
 
     def _init_default_logblocks(self, prefix, link_uri, list_logvar, global_logging_enabled, topic_type):

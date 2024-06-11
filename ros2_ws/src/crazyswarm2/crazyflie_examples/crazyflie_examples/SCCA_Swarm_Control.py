@@ -97,7 +97,7 @@ class SwarmControl(Node):
     def shape_selector_callback(self,request,response):
         self.shape = request.shape
         robot_prefix = self._ros_parameters["robot_prefix"]
-        if self.shape == "Takeoff":
+        if self.shape == "Takeoff(FiveCF)":
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
             if robot_prefix == 'cf5':
@@ -109,8 +109,8 @@ class SwarmControl(Node):
             elif robot_prefix == 'cf8':
                 self.x_pos = 0.5; self.y_pos = 0; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf9':
-                self.x_pos = 0.5; self.y_pos = 0; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
-        elif self.shape == "U": 
+                self.x_pos = 0; self.y_pos = 0.5; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "U(FiveCF)": 
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
             if robot_prefix == 'cf5':
@@ -120,10 +120,10 @@ class SwarmControl(Node):
             elif robot_prefix == 'cf7':
                 self.x_pos = 0; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf8':
-                self.x_pos = 0.4572; self.y_pos = 0.4; self.z_pos = 0; self.yaw = 0.6604; self.abs_rel = 0
+                self.x_pos = 0.4572; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf9':
                 self.x_pos = 0.4572; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
-        elif self.shape == "Transition": 
+        elif self.shape == "Transition(FiveCF)": 
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
             if robot_prefix == 'cf5':
@@ -136,20 +136,20 @@ class SwarmControl(Node):
                 self.x_pos = -0.4572; self.y_pos = -0.2; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf9':
                 self.x_pos = 0.4572; self.y_pos = -0.2; self.z_pos = 0.9906; self.yaw = 0; self.abs_rel = 0
-        elif self.shape == "C": 
+        elif self.shape == "C(FiveCF)": 
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
             if robot_prefix == 'cf5':
                 self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf6':
-                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0; self.yaw = 1.3208; self.abs_rel = 0
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf7':
                 self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.9906; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf8':
                 self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf9':
                 self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
-        elif self.shape == "C(Alternative)": 
+        elif self.shape == "C(Alternative)(FiveCF)": 
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True
             if robot_prefix == 'cf5':
@@ -162,6 +162,33 @@ class SwarmControl(Node):
                 self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf9':
                 self.x_pos = 0.23; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "U": 
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0; self.y_pos = 0.4572; self.z_pos = 1.1557; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = 0; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 1.1557; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "C": 
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0; self.y_pos = 0.4; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = 0; self.y_pos = 0.4; self.z_pos = 0.6604; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = -0.4572; self.y_pos = 0.4; self.z_pos = 0.9906; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == "Landing": 
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0; self.y_pos = 0; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf6':
+                self.x_pos = 0; self.y_pos = 0.5; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
+            elif robot_prefix == 'cf8':
+                self.x_pos = 0; self.y_pos = 1.0; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
         elif self.shape == 'line':
             self.get_logger().info(f"Requesting shape {self.shape}...")
             self.shape_selected=True

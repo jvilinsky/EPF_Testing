@@ -240,7 +240,7 @@ class GoalCommander(Node):
                     self.notifysps_client.call_async(req)
                     self.command_goto = True
 
-            self.get_logger().info("command go to: %s  msgwaypoint.wp_reached:  %s" % (self.command_goto,self.msg_waypoint.wp_reached))
+            #self.get_logger().info("command go to: %s  msgwaypoint.wp_reached:  %s" % (self.command_goto,self.msg_waypoint.wp_reached))
 
             if (self.command_goto and self.msg_waypoint.num > 0) and not self.msg_waypoint.wp_reached: # (self.msg_waypoint.wp_reached and not self.msg_waypoint.goal_reached):
                 req = GoTo.Request()
@@ -257,7 +257,7 @@ class GoalCommander(Node):
                 self.command_stopandhover = False
                 self.in_goto_mode = True
             
-            self.get_logger().info("command_land: %s" % (self.command_land))
+            #self.get_logger().info("command_land: %s" % (self.command_land))
 
             if self.command_land: #or self.msg_waypoint.goal_reached or not self.msg_waypoint.num:
                 self.in_goto_mode = False

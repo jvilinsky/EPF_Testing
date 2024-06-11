@@ -3,7 +3,7 @@ robots:
   cf5: # black+blue
     enabled: true
     uri: radio://0/80/2M/E7E7E7E7E5
-    initial_position: [0, -0.5, 0]
+    initial_position: [0, 0, 0]
     type: cf21  # see robot_types
     ca_on: false
     hover_height: 0.5
@@ -21,7 +21,7 @@ robots:
   cf6: # green
     enabled: true
     uri: radio://0/80/2M/E7E7E7E7E6
-    initial_position: [-0.5, 0, 0]
+    initial_position: [0, 0.5, 0]
     type: cf21  # see robot_types
     ca_on: false
     hover_height: 0.5
@@ -39,7 +39,7 @@ robots:
     #       frequency: 1
     #       vars: ["acc.x", "acc.y"]
   cf7: # yellow
-    enabled: true
+    enabled: false
     uri: radio://0/80/2M/E7E7E7E7E7
     initial_position: [0, 0, 0]
     type: cf21  # see robot_types
@@ -62,7 +62,7 @@ robots:
   cf8: # black
     enabled: true
     uri: radio://0/80/2M/E7E7E7E7E8
-    initial_position: [0.5, 0, 0]
+    initial_position: [0, 1.0, 0]
     type: cf21  # see robot_types
     ca_on: false
     hover_height: 0.5
@@ -77,9 +77,9 @@ robots:
     #      frequency: 1
     #      vars: ["acc.x", "acc.y", "acc.z"]
   cf9: # blue
-    enabled: true
+    enabled: false
     uri: radio://0/80/2M/E7E7E7E7E9
-    initial_position: [0.5, 0, 0]
+    initial_position: [0, 0.5, 0]
     type: cf21  # see robot_types
     ca_on: false
     hover_height: 0.5
@@ -120,7 +120,7 @@ robot_types:
 
   cf21_mocap_deck:
     motion_capture:
-      enabled: true
+      enabled: false
       # only if enabled; see motion_capture.yaml
       marker: mocap_deck
       dynamics: default
