@@ -29,6 +29,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/CollDetect.msg"
   "msg/InFlight.msg"
   "msg/SCCAwp.msg"
+  "msg/Status.msg"
   "srv/GoTo.srv"
   "srv/Land.srv"
   "srv/NotifySetpointsStop.srv"

@@ -14,6 +14,7 @@ install(PROGRAMS
   crazyflie_examples/SCCA_goal_commander.py
   crazyflie_examples/SCCA_waypoint_gen.py
   crazyflie_examples/SCCA_Swarm_Control.py
+  crazyflie_examples/swarmSequence.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
