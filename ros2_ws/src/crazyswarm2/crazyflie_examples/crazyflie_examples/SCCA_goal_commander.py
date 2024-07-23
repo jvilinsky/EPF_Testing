@@ -212,6 +212,7 @@ class GoalCommander(Node):
                 future = self.ca_client.call_async(req)
                 future.add_done_callback(partial(self.ca_client_callback))
                 self.command_goto = False
+                self.command_goto = True #Leave true only for testing collision avoidance
                 self.command_stopandhover = True
                 self.msg_collision.collision = False
 

@@ -74,7 +74,7 @@ def generate_launch_description():
                                     name=key+'_detect_avoid',
                                     output='screen',
                                     parameters=[{"ca_threshold1": 0.2},
-                                                {"ca_threshold2": 0.4},
+                                                {"ca_threshold2": 0.8},
                                                 {"avoidance_vel": 0.18},
                                                 {"ca_on": value["ca_on"]},
                                                 {"robot_prefix": key},

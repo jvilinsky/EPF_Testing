@@ -99,7 +99,7 @@ class SwarmControl(Node):
         robot_prefix = self._ros_parameters["robot_prefix"]
         if self.shape == "Takeoff(FiveCF)":
             self.get_logger().info(f"Requesting shape {self.shape}...")
-            self.shape_selected=True
+            self.shape_selected=True 
             if robot_prefix == 'cf5':
                 self.x_pos = 0; self.y_pos = -0.5; self.z_pos = 1.3208; self.yaw = 0; self.abs_rel = 0
             elif robot_prefix == 'cf6':
@@ -222,6 +222,21 @@ class SwarmControl(Node):
             self.shape_selected=True
             if robot_prefix == 'cf6':
                 self.x_pos = 0.0; self.y_pos = 0.0; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
+        #Sequence for collision avoidance testing
+        elif self.shape == 'CA_seq_1':
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0.0; self.y_pos = 0.3; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
+            if robot_prefix == 'cf6':
+                self.x_pos = 0.0; self.y_pos = -0.3; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
+        elif self.shape == 'CA_seq_2':
+            self.get_logger().info(f"Requesting shape {self.shape}...")
+            self.shape_selected=True
+            if robot_prefix == 'cf5':
+                self.x_pos = 0.0; self.y_pos = 0.5; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
+            if robot_prefix == 'cf6':
+                self.x_pos = 0.0; self.y_pos = -0.5; self.z_pos = 0.5; self.yaw = 0; self.abs_rel = 0
         #Template for swarm control
         elif self.shape == "Template (Dont Use)": 
             self.get_logger().info(f"Requesting shape {self.shape}...")

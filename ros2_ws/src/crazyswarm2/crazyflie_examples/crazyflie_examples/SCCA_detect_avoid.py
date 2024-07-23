@@ -17,6 +17,7 @@ from motion_capture_tracking_interfaces.msg import NamedPoseArray
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy
 from rclpy.duration import Duration
 from sensor_msgs.msg import LaserScan
+from nav_msgs.msg import Odometry
 from functools import partial
 import numpy as np
 import math
@@ -37,6 +38,7 @@ class DetectAndAvoid(Node):
         self.ca_on  = self.get_parameter('ca_on').value
         robot_prefix  = self.get_parameter('robot_prefix').value
         self.uris = self.get_parameter('uris').value
+        self.uav_uri = robot_prefix
         #self.get_logger().info('uris %s' % (self.uris))
         
         # Publishers
@@ -51,20 +53,25 @@ class DetectAndAvoid(Node):
             robot_prefix + '/pose',
             self.pose_callback,
             10)
-        # qos_profile = QoSProfile(reliability =QoSReliabilityPolicy.BEST_EFFORT,
-        #         history=QoSHistoryPolicy.KEEP_LAST,
-        #         depth=1,
-        #         deadline = Duration(seconds=0, nanoseconds=1e9/100.0))
-        # self.all_poses_sub = self.create_subscription(
-        #     NamedPoseArray,
-        #     '/poses',
-        #     self.all_poses_callback,
-        #     qos_profile
-        # )
+        qos_profile = QoSProfile(reliability =QoSReliabilityPolicy.BEST_EFFORT,
+                history=QoSHistoryPolicy.KEEP_LAST,
+                depth=1,
+                deadline = Duration(seconds=0, nanoseconds=1e9/100.0))
+        self.all_poses_sub = self.create_subscription(
+            NamedPoseArray,
+            '/poses',
+            self.all_poses_callback,
+            qos_profile
+        )
+        # self.scan_sub = self.create_subscription(
+        #     LaserScan,
+        #     robot_prefix + '/scan',
+        #     self.scan_callback,
+        #     10)
         self.scan_sub = self.create_subscription(
-            LaserScan,
-            robot_prefix + '/scan',
-            self.scan_callback,
+            Odometry,
+            robot_prefix + '/odom',
+            self.odom_callback,
             10)
         self.waypoint_sub = self.create_subscription(
             WayPoint,
@@ -81,7 +88,7 @@ class DetectAndAvoid(Node):
         
         
         # Services
-        self.ca_choice = self.apf_ca
+        self.ca_choice = self.epf_ca
         self.create_service(
             CA,
             robot_prefix + "/ca", 
@@ -101,16 +108,15 @@ class DetectAndAvoid(Node):
         
         # Initialize Crazyflie logging
         self.poses_dict = {}
-        poses_dict_structure = { #create dictionary structure
-            "x": float,
-            "y": float,
-            "z": float,
-            "pitch": float,
-            "yaw": float,
-            "roll": float
-        }
-        for key in self.uris: #create dictionary entry for each crazyflie using the structure created
-            self.poses_dict[key] = poses_dict_structure
+        for key in self.uris: # Create a unique dictionary entry for each crazyflie
+            self.poses_dict[key] = {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "pitch": 0.0,
+                "yaw": 0.0,
+                "roll": 0.0
+            }
 
     def pose_callback(self, msg:PoseStamped):
         self.msg_pose = msg
@@ -123,8 +129,8 @@ class DetectAndAvoid(Node):
     def all_poses_callback(self, msg:NamedPoseArray):
         #self.get_logger().info('msg %s' % (msg))
 
-        poses = msg.poses
-        for pose in poses:
+        self.poses = msg.poses
+        for pose in self.poses:
             name = pose.name
             x = pose.pose.position.x
             y = pose.pose.position.y
@@ -137,7 +143,34 @@ class DetectAndAvoid(Node):
             self.poses_dict[name]["pitch"] = pitch
             self.poses_dict[name]["yaw"] = yaw
             self.poses_dict[name]["roll"] = roll
+
+        uri = self.uav_uri
+        for pose in self.poses:
+            uri2 = pose.name
+            if uri2 != uri:
+                distance = np.sqrt((self.poses_dict[uri2]["x"]-self.poses_dict[uri]["x"])**2+\
+                                   (self.poses_dict[uri2]["y"]-self.poses_dict[uri]["y"])**2+\
+                                    (self.poses_dict[uri2]["z"]-self.poses_dict[uri]["z"])**2)
+                
+                # self.get_logger().info(f"uri2_x={self.poses_dict[uri2]['x']},uri_x={self.poses_dict[uri]['x']}, "
+                #                    f"uri2_y={self.poses_dict[uri2]['y']},uri_y={self.poses_dict[uri]['y']}, "
+                #                    f"uri2_z={self.poses_dict[uri2]['z']},uri_z={self.poses_dict[uri]['z']}")
+                
+                # self.get_logger().info(f"{uri} distance = {distance}")
+                
+                if distance <= self.ca_threshold2:
+                    self.coll_check = True
+                    distance_coll = distance
+            
+        msg_collision = CollDetect()
+        # msg_collision.nearest = distance_coll
+        if self.coll_check:
+            msg_collision.collision = True
+        else:
+            msg_collision.collision = False
         
+        
+
         #self.get_logger().info('poses = %s' % (self.poses_dict))
 
 
@@ -147,6 +180,9 @@ class DetectAndAvoid(Node):
         self.wp_inertial = [self.wp.x, self.wp.y, self.wp.z]
         self.wp_relative_array = self.inertial2relative(self.wp_inertial)
         self.wp_dist = self.dist2pos(self.wp_relative_array)
+
+    def odom_callback(self, msg:Odometry):
+        self.msg_odom = msg
 
     def inflight_callback(self, msg:InFlight):
         self.msg_inflight = msg
@@ -188,6 +224,67 @@ class DetectAndAvoid(Node):
             else:
                 msg_collision.collision = False
             self.publisher_collision.publish(msg_collision)
+
+    def epf_ca(self, request, response):
+        # uri = self.uav_uri
+        
+        # ka = 0.3 
+        # kr = 0.01 
+        # ng = 2
+        # do = self.ca_threshold2
+        # alpha = 0.5
+        # gam = np.rad2deg(45)
+
+        # R_2 = np.array([[np.cos(gam),-np.sin(gam),0],
+        #                 [np.sin(gam),np.cos(gam),0],
+        #                 [0,0,1]])
+        # R_3 = np.array([[np.cos(gam),0,np.sin(gam)],
+        #                 [0,1,0],
+        #                 [-np.sin(gam),0,np.cos(gam)]])
+        # R_2_T = R_2.T
+        # R_3_T = R_3.T
+
+        # #distance from uav to goal:
+        # d_Nr_Nrg = np.sqrt((self.wp.x-self.poses_dict[uri]["x"])**2 + \
+        #                            (self.wp.y-self.poses_dict[uri]["y"])**2 + \
+        #                             (self.wp.z-self.poses_dict[uri]["z"])**2)
+        # #direction from uav to goal:
+        # C = np.array([self.wp.x,self.wp.y,self.wp.z]) - \
+        #     np.array([self.poses_dict[uri]["x"],self.poses_dict[uri]["y"],self.poses_dict[uri]["z"]])
+        # dir_Nr_Nrg = C/np.linalg.norm(C)
+        # #attractive potential field
+        # fa = ka*d_Nr_Nrg*dir_Nr_Nrg
+
+        # for pose in self.poses:
+        #     uri2 = pose.name
+        #     if uri2 != uri:
+        #         #distance from uav to object:
+        #         distance = np.sqrt((self.poses_dict[uri2]["x"]-self.poses_dict[uri]["x"])**2+\
+        #                            (self.poses_dict[uri2]["y"]-self.poses_dict[uri]["y"])**2+\
+        #                             (self.poses_dict[uri2]["z"]-self.poses_dict[uri]["z"])**2)
+                
+        #         if distance <= self.ca_threshold2:
+        #             d_Nr_Nro = distance
+        #             #direction from uav to object:
+        #             C = np.array([self.poses_dict[uri2]["x"],self.poses_dict[uri2]["y"],self.poses_dict[uri2]["z"]]) - \
+        #                 np.array([self.poses_dict[uri]["x"],self.poses_dict[uri]["y"],self.poses_dict[uri]["z"]])
+        #             dir_Nr_Nro = C/np.linalg.norm(C)
+        #             #uav position:
+        #             Nr = np.array([self.poses_dict[uri]["x"],self.poses_dict[uri]["y"],self.poses_dict[uri]["z"]])
+        #             #object position:
+        #             Nro = np.array([self.poses_dict[uri2]["x"],self.poses_dict[uri2]["y"],self.poses_dict[uri2]["z"]])
+        #             #creating e frame:
+        #             vx = self.msg_odom.twist.twist.linear.x
+        #             e1 = np.array([vx,0])
+        #             P_h = np.arccos(np.dot(e1,))
+
+        #             q_h = R_h*(Nro-Nr)
+        #             q_v = R_v*(Nro-Nr)
+        #             q_p = np.array([[alpha*q_h1],[alpha*q_h2],[(1-alpha)*q_v3]])
+        #             q_hat = q_p/np.linalg.norm(q_p)
+        #             fr_e = -kr*((d_Nr_Nrg**ng)/(d_Nr_Nro**2))*((1/d_Nr_Nro)-(1/do))*q_hat
+        self.get_logger().info(f"EPF Engaged")
+        
 
     def repel_ca(self, request, response):
         old_hover = request.old_hover

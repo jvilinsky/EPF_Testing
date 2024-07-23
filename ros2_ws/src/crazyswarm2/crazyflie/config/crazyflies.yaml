@@ -1,11 +1,11 @@
 # named list of all robots
 robots:
   cf5: # black+blue
-    enabled: false
+    enabled: true
     uri: radio://0/80/2M/E7E7E7E7E5
-    initial_position: [0, 0, 0]
+    initial_position: [0, 0.5, 0]
     type: cf21  # see robot_types
-    ca_on: false
+    ca_on: true
     hover_height: 0.5
     waypoints: #false
       wp0: [-0.75, 0.25, 0.0, 0.0, 1] #[x position, y position, z position, yaw position, absolute(0)/relative(1)]
@@ -21,9 +21,9 @@ robots:
   cf6: # green
     enabled: true
     uri: radio://0/80/2M/E7E7E7E7E6
-    initial_position: [0, 0, 0]
+    initial_position: [0, -0.5, 0]
     type: cf21  # see robot_types
-    ca_on: false
+    ca_on: true
     hover_height: 0.5
     waypoints: #false
       # wp0: [-0.5,-0.75, 0.0, 0.0, 1]
@@ -143,8 +143,8 @@ all:
      # remove to disable default topic
       pose:
         frequency: 10 # Hz
-      # odom:
-      #   frequency: 10 # Hz
+      odom:
+        frequency: 10 # Hz
       scan:
         frequency: 10 # Hz
     #custom_topics:
