@@ -27,12 +27,12 @@ class EPF_Harness:
         ng = 2
         do = self.ca_threshold2
         alpha = 0.5
-        gam = np.rad2deg(45)
+        gam = np.deg2rad(45)
 
-        R_2 = np.array([[np.cos(gam),-np.sin(gam),0],
+        R_3 = np.array([[np.cos(gam),-np.sin(gam),0],
                         [np.sin(gam),np.cos(gam),0],
                         [0,0,1]])
-        R_3 = np.array([[np.cos(gam),0,np.sin(gam)],
+        R_2 = np.array([[np.cos(gam),0,np.sin(gam)],
                         [0,1,0],
                         [-np.sin(gam),0,np.cos(gam)]])
         R_2_T = R_2.T
@@ -66,9 +66,9 @@ class EPF_Harness:
                         np.array([self.poses_dict[uri]["x"],self.poses_dict[uri]["y"],self.poses_dict[uri]["z"]])
                     dir_Nr_Nro = C/np.linalg.norm(C)
                     #uav position:
-                    Nr = np.array([self.poses_dict[uri]["x"],self.poses_dict[uri]["y"],self.poses_dict[uri]["z"]])
+                    Nr = np.array([[self.poses_dict[uri]["x"]],[self.poses_dict[uri]["y"]],[self.poses_dict[uri]["z"]]])
                     #object position:
-                    Nro = np.array([self.poses_dict[uri2]["x"],self.poses_dict[uri2]["y"],self.poses_dict[uri2]["z"]])
+                    Nro = np.array([[self.poses_dict[uri2]["x"]],[self.poses_dict[uri2]["y"]],[self.poses_dict[uri2]["z"]]])
                     #creating e frame:
                     vx = self.twist_vx #vx = self.msg_odom.twist.twist.linear.x
                     e1_h = np.array([vx,0])
@@ -77,8 +77,8 @@ class EPF_Harness:
                     Vertical_dir_Nr_Nro = np.array([dir_Nr_Nro[2],dir_Nr_Nro[0]])
                     #relative angles
                     a1 = Horizontal_dir_Nr_Nro; b1 = e1_h; a2 = Vertical_dir_Nr_Nro; b2 = e1_v
-                    rho_h = np.arccos(np.dot(a1,b1)/(np.abs(a1)*np.abs(b1)))
-                    rho_v = np.arccos(np.dot(a2,b2)/(np.abs(a2)*np.abs(b2)))
+                    rho_h = np.arccos(np.dot(a1,b1)/(np.linalg.norm(a1)*np.linalg.norm(b1)))
+                    rho_v = np.arccos(np.dot(a2,b2)/(np.linalg.norm(a2)*np.linalg.norm(b2)))
                     #Rotation matrix determination
                     if np.rad2deg(rho_h) <= 180:
                         R_h = R_3
@@ -88,11 +88,12 @@ class EPF_Harness:
                         R_v = R_2
                     elif np.rad2deg(rho_v) > 180:
                         R_v = R_2_T
-                    q_h = R_h*(Nro-Nr)
-                    q_v = R_v*(Nro-Nr)
+                    q_h = np.dot(R_h,(Nro-Nr))
+                    q_v = np.dot(R_v,(Nro-Nr))
                     q_prime = np.array([alpha*q_h[0],alpha*q_h[1],(1-alpha)*q_v[2]])
                     q_hat = q_prime/np.linalg.norm(q_prime)
-                    fr_e = -kr*((d_Nr_Nrg**ng)/(d_Nr_Nro**2))*((1/d_Nr_Nro)-(1/do))*q_hat
+                    fr_e_wrapped = -kr*((d_Nr_Nrg**ng)/(d_Nr_Nro**2))*((1/d_Nr_Nro)-(1/do))*q_hat
+                    fr_e = [element.item() for element in fr_e_wrapped]
                     fr_g = (1/2)*ng*kr*d_Nr_Nrg**(ng-1)*((1/d_Nr_Nro)-(1/do))**2*dir_Nr_Nrg
                     fr = fr_e + fr_g
         ft = fa + fr
